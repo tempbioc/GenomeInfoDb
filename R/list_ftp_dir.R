@@ -25,7 +25,11 @@
 .getURL2 <- function(url)
 {
     stopifnot(isSingleString(url))
-    doc <- try(getURL(url), silent=TRUE)
+    if (!requireNamespace("RCurl", quietly = TRUE))
+        return(
+            try(stop("RCurl is not installed.", call. = FALSE))
+        )
+    doc <- try(RCurl::getURL(url), silent=TRUE)
     if (!inherits(doc, "try-error"))
         return(doc)
     condition <- attr(doc, "condition")
@@ -77,7 +81,7 @@
 }
 
 ### The keys must be URLs to FTP directories that went thru .normarg_ftp_dir(),
-### that is, without the "protolol://" part and with a trailing slash.
+### that is, without the "protocol://" part and with a trailing slash.
 .cached_ftp_dir_listing <- new.env(parent=emptyenv())
 
 ### Uses RCurl::getURL() to retrieve the listing of an FTP dir. The result
